@@ -53,6 +53,13 @@
     "space-before-blocks": "warn",
     "no-param-reassign": "error",
     "prefer-spread": "error",
-    "function-paren-newline": "error"
+    "function-paren-newline": "error",
+    /* ARROW FUNCTIONS */
+    "prefer-arrow-callback": "error",
+    "arrow-spacing": "warn",
+    "arrow-parens": "error",
+    "arrow-body-style": "warn",
+    "no-confusing-arrow": "error",
+    "implicit-arrow-linebreak": "error"
   }
 }
