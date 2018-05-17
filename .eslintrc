@@ -19,26 +19,40 @@
   },
   "rules": {
     "no-console": "off",
+    /* REFERENCES */
     "prefer-const": "error",
     "no-var": "error",
+    /* OBJECTS */
     "no-new-object": "error",
     "object-shorthand": "error",
     "quote-props": [
       "warn",
       "as-needed"
     ],
+    /* ARRAYS */
     "no-array-constructor": "error",
     "array-callback-return": "error",
+    /* DESTRUCTURING */
     "prefer-destructuring": "error",
+    /* STRING */
     "prefer-template": "error",
     "template-curly-spacing": "error",
-    "quotes": ["error", "double"],
+    "quotes": [
+      "error",
+      "double"
+    ],
     "no-eval": "error",
     "no-useless-escape": "warn",
+    /* FUNCTIONS */
     "func-style": "error",
-//    "wrap-iife": "error",
+    "wrap-iife": "error",
     "no-loop-func": "error",
-    "prefer-rest-params": "error"
-
+    "prefer-rest-params": "error",
+    "no-new-func": "error",
+    "space-before-function-paren": "warn",
+    "space-before-blocks": "warn",
+    "no-param-reassign": "error",
+    "prefer-spread": "error",
+    "function-paren-newline": "error"
   }
 }
