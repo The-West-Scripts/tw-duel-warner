@@ -43,10 +43,10 @@
             $.getScript("https://glcdn.githack.com/knom_retsam/the-west-public/raw/master/script-updater.js", () => {
                 if (scriptUpdater.TWDW > TWDW.version) {
                     const updateMessage = new west.gui.Dialog(
-"Update: The West Duel Warner",
+                        "Update: The West Duel Warner",
                         `<span>Update Available<br><br><b>v${scriptUpdater.TWDW}:</b><br>${scriptUpdater.TWDWNew
                             }</span>`, west.gui.Dialog.SYS_WARNING
-).addButton("Update", () => {
+                    ).addButton("Update", () => {
                         updateMessage.hide();
                         location.href = "https://greasyfork.org/scripts/40902-the-west-duel-warner/code/The%20West%20Duel%20Warner.user.js";
                     }).addButton("cancel").show();
@@ -287,8 +287,7 @@
             TWDW.InitUpdater();
             TWDW.RefreshOpponentChecker();
             setInterval(TWDW.RefreshPositionChecker, 10000);
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e.stack);
         }
     });

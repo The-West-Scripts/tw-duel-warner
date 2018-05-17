@@ -60,6 +60,44 @@
     "arrow-parens": "error",
     "arrow-body-style": "warn",
     "no-confusing-arrow": "error",
-    "implicit-arrow-linebreak": "error"
+    "implicit-arrow-linebreak": "error",
+    /* CLASSES AND CONSTRUCTORS */
+    "no-useless-constructor": "error",
+    "no-dupe-class-members": "error",
+    /* ITERATORS AND GENERATORS */
+    "no-iterator": "error",
+    "no-restricted-syntax": "error",
+    "generator-star-spacing": "error",
+    /* PROPERTIES */
+    "no-restricted-properties": "error",
+    /* VARIABLES */
+    "no-undef": "error",
+    "no-multi-assign": "error",
+    /* COMPARATORS */
+    "no-case-declarations": "error",
+    "no-nested-ternary": "error",
+    "no-unneeded-ternary": "error",
+    "no-mixed-operators": "error",
+    /* BLOCKS */
+    "nonblock-statement-body-position": "warn",
+    "brace-style": "warn",
+    "no-else-return": "error",
+    /* WHITESPACE */
+//    "indent": ["warn", 4],
+    "keyword-spacing": "warn",
+    "space-infix-ops": "warn",
+//    "newline-per-chained-call": "warn",
+    "no-whitespace-before-property": "warn",
+    "padded-blocks": ["warn", "never"],
+    "space-in-parens": "warn",
+    "array-bracket-spacing": "warn",
+    "object-curly-spacing": "warn",
+    "block-spacing": "warn",
+    "comma-spacing": "warn",
+    "computed-property-spacing": "warn",
+    "func-call-spacing": "warn",
+    "key-spacing": "warn",
+    "no-trailing-spaces": "warn",
+    "no-multiple-empty-lines": "warn"
   }
 }
