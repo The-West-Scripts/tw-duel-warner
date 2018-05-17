@@ -98,6 +98,20 @@
     "func-call-spacing": "warn",
     "key-spacing": "warn",
     "no-trailing-spaces": "warn",
-    "no-multiple-empty-lines": "warn"
+    "no-multiple-empty-lines": "warn",
+    /* COMMA */
+    "comma-style": "error",
+    "comma-dangle": ["warn", "always"],
+    "semi": "error",
+    /* CASTING */
+    "radix": "error",
+    "no-new-wrappers": "error",
+    /* NAMING CONVENTION */
+    "id-length": "error",
+    "camelcase": "error",
+    "new-cap": "error",
+    "no-underscore-dangle": "error",
+    /* LIBRARY */
+    "no-restricted-globals": "error"
   }
 }

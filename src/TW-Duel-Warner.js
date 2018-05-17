@@ -38,7 +38,7 @@
         loadedDataArray: [],
         warningHighAmount: false,
     };
-    TWDW.InitUpdater = function () {
+    TWDW.initUpdater = function () {
         const loadUpdater = function () {
             $.getScript("https://glcdn.githack.com/knom_retsam/the-west-public/raw/master/script-updater.js", () => {
                 if (scriptUpdater.TWDW > TWDW.version) {
@@ -118,7 +118,7 @@
     TWDW.savePreferences = function () {
         localStorage.setItem("TWDW_preferences", JSON.stringify(TWDW.preferences));
     };
-    TWDW.InitSettingsUi = function () {
+    TWDW.initSettingsUi = function () {
         const div = $("<div class=\"ui_menucontainer\" />");
         const link = $("<div id=\"TWDW_Menu\" class=\"menulink\" title=\"The West Duel Warner\" />")
             .css("background-image", TWDW.base64.menuImage)
@@ -139,11 +139,11 @@
 
         $("#ui_menubar").append((div).append(link).append("<div class=\"menucontainer_bottom\" />"));
     };
-    TWDW.InitSettings = function () {
+    TWDW.initSettings = function () {
         const storage = JSON.parse(localStorage.getItem("TWDW_preferences"));
         TWDW.preferences = storage ? storage : TWDW.defaultPreferences;
     };
-    TWDW.AnalyzeData = function () {
+    TWDW.analyzeData = function () {
         const warningListCurrentPosition = [];
         const warningListAllPositions = [];
         const newPlayersList = {};
@@ -232,7 +232,7 @@
             }
         }
     };
-    TWDW.RefreshOpponentChecker = function () {
+    TWDW.refreshOpponentChecker = function () {
         let level = 0;
 
         const analyzeNextLevel = function (resp) {
@@ -244,10 +244,16 @@
 
             if (pcList.length >= 4 && level < 9) {
                 level++;
-                $.post(`/game.php?window=duel&action=search_op&h=${Player.h}`, {page: level}, analyzeNextLevel, "json");
+                $.post(
+                    `/game.php?window=duel&action=search_op&h=${Player.h}`,
+                    {
+                        page: level,
+                    },
+                    analyzeNextLevel, "json"
+                );
             } else {
                 TWDW.warningHighAmount = level >= 9;
-                TWDW.AnalyzeData();
+                TWDW.analyzeData();
             }
         };
 
@@ -260,7 +266,7 @@
 
         console.log(`The West Duel Warner: Refreshed data, next refresh in ${interval / 60000} minutes.`);
 
-        setTimeout(TWDW.RefreshOpponentChecker, interval);
+        setTimeout(TWDW.refreshOpponentChecker, interval);
     };
     TWDW.RefreshPositionChecker = function () {
         const currentDate = new Date().getTime();
@@ -277,18 +283,18 @@
                 }
             }
 
-            TWDW.AnalyzeData();
+            TWDW.analyzeData();
         }
     };
     $(document).ready(() => {
         try {
-            TWDW.InitSettings();
-            TWDW.InitSettingsUi();
-            TWDW.InitUpdater();
-            TWDW.RefreshOpponentChecker();
+            TWDW.initSettings();
+            TWDW.initSettingsUi();
+            TWDW.initUpdater();
+            TWDW.refreshOpponentChecker();
             setInterval(TWDW.RefreshPositionChecker, 10000);
-        } catch (e) {
-            console.log(e.stack);
+        } catch (err) {
+            console.log(err.stack);
         }
     });
 }));
