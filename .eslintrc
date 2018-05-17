@@ -1,0 +1,44 @@
+{
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "env": {
+    "browser": true,
+    "jquery": true
+  },
+  "globals": {
+    "west": true,
+    "Character": true,
+    "Player": true,
+    "wman": true,
+    "scriptUpdater": true,
+    "ItemManager": true,
+    "PlayerProfileWindow": true,
+    "PlayerProfileMain": true
+  },
+  "rules": {
+    "no-console": "off",
+    "prefer-const": "error",
+    "no-var": "error",
+    "no-new-object": "error",
+    "object-shorthand": "error",
+    "quote-props": [
+      "warn",
+      "as-needed"
+    ],
+    "no-array-constructor": "error",
+    "array-callback-return": "error",
+    "prefer-destructuring": "error",
+    "prefer-template": "error",
+    "template-curly-spacing": "error",
+    "quotes": ["error", "double"],
+    "no-eval": "error",
+    "no-useless-escape": "warn",
+    "func-style": "error",
+//    "wrap-iife": "error",
+    "no-loop-func": "error",
+    "prefer-rest-params": "error"
+
+  }
+}

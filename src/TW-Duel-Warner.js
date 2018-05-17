@@ -15,7 +15,7 @@
 (function(fn) {
     const script = document.createElement("script");
     script.setAttribute("type", "application/javascript");
-    script.textContent = "(" + fn + ")();";
+    script.textContent = `(${fn})();`;
     document.body.appendChild(script);
     document.body.removeChild(script);
 })(function() {
@@ -44,8 +44,8 @@
             $.getScript("https://glcdn.githack.com/knom_retsam/the-west-public/raw/master/script-updater.js", function() {
                 if (scriptUpdater.TWDW > TWDW.version) {
                     const updateMessage = new west.gui.Dialog("Update: The West Duel Warner",
-                        "<span>Update Available<br><br><b>v" + scriptUpdater.TWDW + ":</b><br>" + scriptUpdater.TWDWNew +
-                        "</span>", west.gui.Dialog.SYS_WARNING).addButton("Update", function() {
+                        `<span>Update Available<br><br><b>v${scriptUpdater.TWDW}:</b><br>${scriptUpdater.TWDWNew 
+                        }</span>`, west.gui.Dialog.SYS_WARNING).addButton("Update", function() {
                         updateMessage.hide();
                         location.href = "https://greasyfork.org/scripts/40902-the-west-duel-warner/code/The%20West%20Duel%20Warner.user.js";
                     }).addButton("cancel").show();
@@ -56,23 +56,23 @@
         setTimeout(loadUpdater, 5000);
     };
     TWDW.getPlayerLink = function(name) {
-        return "<a href='javascript:void(parent.PlayerProfileWindow.open(encodeURIComponent(\"" + name + "\")));'>" + name + "</a>";
+        return `<a href='javascript:void(parent.PlayerProfileWindow.open(encodeURIComponent("${name}")));'>${name}</a>`;
     };
     TWDW.refreshSettingsMenu = function(content) {
         const setTitle = function(name) {
-            content.append("<p><span style=\"font-size: 130%; font-weight: bold; font-style: italic; display: inline-block; margin-top: 20px;\">" +
-                name + "</span></p>");
+            content.append(`<p><span style="font-size: 130%; font-weight: bold; font-style: italic; display: inline-block; margin-top: 20px;">${ 
+                name}</span></p>`);
         };
 
         const setCheckBox = function(prefName, text) {
             const checkbox = new west.gui.Checkbox(text);
-            checkbox.setId("TWDW_" + prefName);
+            checkbox.setId(`TWDW_${prefName}`);
             if (TWDW.preferences[prefName]) {
                 checkbox.toggle();
             }
 
             content.append(checkbox.getMainDiv(), "<br />");
-            $(content).find("#TWDW_" + prefName).click(function() {
+            $(content).find(`#TWDW_${prefName}`).click(function() {
                 TWDW.preferences[prefName] = checkbox.isSelected();
                 TWDW.savePreferences();
                 TWDW.refreshSettingsMenu(content);
@@ -84,10 +84,10 @@
         let htmlPlayersInfo = "";
         for (const property in TWDW.playersList) {
             if (TWDW.playersList.hasOwnProperty(property)) {
-                htmlPlayersInfo += ", " + TWDW.getPlayerLink(TWDW.playersList[property].name);
+                htmlPlayersInfo += `, ${TWDW.getPlayerLink(TWDW.playersList[property].name)}`;
                 if (TWDW.currentPos !== TWDW.playersList[property].pos) {
                     const difference = new Date().getTime() - TWDW.playersList[property].date;
-                    htmlPlayersInfo += " (at your old position " + (Math.floor(difference / 60000) + 1) + " min ago)";
+                    htmlPlayersInfo += ` (at your old position ${Math.floor(difference / 60000) + 1} min ago)`;
                 }
             }
         }
@@ -103,7 +103,7 @@
         }
 
         setTitle("General Settings");
-        setCheckBox("enableTWDW", "Enable \"The West Duel Warner\" on this world (" + document.domain + ")");
+        setCheckBox("enableTWDW", `Enable "The West Duel Warner" on this world (${document.domain})`);
         setTitle("Detailed Settings");
         setCheckBox("enableIfProtected", "Enable \"The West Duel Warner\" if you are duel protected (knocked out)");
         setCheckBox("playSound", "Play a warning sound if somebody moves to you (or you to him)");
@@ -151,7 +151,7 @@
 
         for (const data of TWDW.loadedDataArray) {
             const playerId = data["player_id"];
-            const loadedPos = data["character_x"].toString() + "-" + data["character_y"];
+            const loadedPos = `${data["character_x"].toString()}-${data["character_y"]}`;
 
             if (TWDW.positionDates.hasOwnProperty(loadedPos) && !newPlayersList.hasOwnProperty(playerId)) {
                 const playerInfo = {
@@ -175,12 +175,12 @@
         if (warningListCurrentPosition.length !== 0 || warningListAllPositions.length !== 0) {
             let playerListStr = "WARNING: NEW PLAYERS NEXT TO YOU: ";
             for (const singleWarningCurrentPosition of warningListCurrentPosition) {
-                playerListStr += "<br />" + TWDW.getPlayerLink(singleWarningCurrentPosition.name);
+                playerListStr += `<br />${TWDW.getPlayerLink(singleWarningCurrentPosition.name)}`;
             }
             for (const currentWarningAllPositions of warningListAllPositions) {
                 const difference = new Date().getTime() - currentWarningAllPositions.date;
-                playerListStr += "<br />" + TWDW.getPlayerLink(currentWarningAllPositions.name) +
-                    " (at your old position " + (Math.floor(difference / 60000) + 1) + " min ago)";
+                playerListStr += `<br />${TWDW.getPlayerLink(currentWarningAllPositions.name) 
+                    } (at your old position ${Math.floor(difference / 60000) + 1} min ago)`;
             }
             if (!document.getElementById("TWDW_Container")) {
                 document.body.insertAdjacentHTML("beforeend", "<div id=\"TWDW_Container\"></div>");
@@ -191,7 +191,7 @@
             }
 
             document.getElementById("TWDW_Container").innerHTML =
-                "<div id=\"TWDW_Warning\" class=\"tw2gui_dialog\" style=\"cursor: pointer; max-width: 800px; opacity: 100; left: 35%; top: 20px;\">" +
+                `${"<div id=\"TWDW_Warning\" class=\"tw2gui_dialog\" style=\"cursor: pointer; max-width: 800px; opacity: 100; left: 35%; top: 20px;\">" +
                 " <div class=\"tp_front\">" +
                 "  <div class=\"tw2gui_bg_tl\"></div>" +
                 "  <div class=\"tw2gui_bg_tr\"></div>" +
@@ -207,9 +207,9 @@
                 " </div>" +
                 " <div class=\"tw2gui_dialog_content\">" +
                 "  <div class=\"tw2gui_dialog_icon system_icon_warning\"></div>" +
-                "  <div class=\"tw2gui_dialog_text\" style=\"font-size: 20px; padding: 12px 0; max-width: 600px; float: none; margin-left: 75px;\">" +
-                playerListStr +
-                "  </div>" +
+                "  <div class=\"tw2gui_dialog_text\" style=\"font-size: 20px; padding: 12px 0; max-width: 600px; float: none; margin-left: 75px;\">"}${ 
+                playerListStr 
+                }  </div>` +
                 "  <div style=\"clear: both;\"></div>" +
                 " </div>" +
                 "<div>";
@@ -245,7 +245,7 @@
 
             if (resp.length >= 4 && level < 9) {
                 level++;
-                $.post("/game.php?window=duel&action=search_op&h=" + Player.h, {page: level}, analyzeNextLevel, "json");
+                $.post(`/game.php?window=duel&action=search_op&h=${Player.h}`, {page: level}, analyzeNextLevel, "json");
             } else {
                 TWDW.warningHighAmount = level >= 9;
                 TWDW.AnalyzeData();
@@ -254,7 +254,7 @@
 
         if (TWDW.preferences.enableTWDW && (TWDW.preferences.enableIfProtected || !Character.isDuelProtected())) {
             TWDW.loadedDataArray = [];
-            $.getJSON("/game.php?window=duel&action=search_op&h=" + Player.h, analyzeNextLevel);
+            $.getJSON(`/game.php?window=duel&action=search_op&h=${Player.h}`, analyzeNextLevel);
         }
 
         const interval = Math.floor(Math.random() * 120000) + 240000;
@@ -266,7 +266,7 @@
     TWDW.RefreshPositionChecker = function() {
         const currentDate = new Date().getTime();
 
-        const pos = Character.position.x.toString() + "-" + Character.position.y.toString();
+        const pos = `${Character.position.x.toString()}-${Character.position.y.toString()}`;
         TWDW.positionDates[pos] = currentDate;
 
         if (TWDW.currentPos !== pos) {
