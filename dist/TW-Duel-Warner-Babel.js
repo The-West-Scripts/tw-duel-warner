@@ -67,15 +67,13 @@
         content.html("");
 
         var htmlPlayersInfo = "";
-        for (var property in TWDW.playersList) {
-            if (TWDW.playersList.hasOwnProperty(property)) {
-                htmlPlayersInfo += ", " + TWDW.getPlayerLink(TWDW.playersList[property].name);
-                if (TWDW.currentPos !== TWDW.playersList[property].pos) {
-                    var difference = new Date().getTime() - TWDW.playersList[property].date;
-                    htmlPlayersInfo += " (at your old position " + (Math.floor(difference / 60000) + 1) + " min ago)";
-                }
+        Object.keys(TWDW.playersList).forEach(function (property) {
+            htmlPlayersInfo += ", " + TWDW.getPlayerLink(TWDW.playersList[property].name);
+            if (TWDW.currentPos !== TWDW.playersList[property].pos) {
+                var difference = new Date().getTime() - TWDW.playersList[property].date;
+                htmlPlayersInfo += " (at your old position " + (Math.floor(difference / 60000) + 1) + " min ago)";
             }
-        }
+        });
 
         if (TWDW.warningHighAmount) {
             content.append("<p><b>WARNING</b>: There are too many duelable players on this world to scan all of them. This script scans currently only the first 10 pages from the provided duel list (so you don't get timed out). If you are moving your character to a position far away, your current position might not be getting scanned.</p>");
@@ -121,103 +119,38 @@
         var warningListAllPositions = [];
         var newPlayersList = {};
 
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+        TWDW.loadedDataArray.forEach(function (data) {
+            var playerId = data["player_id"];
+            var loadedPos = data["character_x"].toString() + "-" + data["character_y"];
 
-        try {
-            for (var _iterator = TWDW.loadedDataArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var data = _step.value;
-
-                var playerId = data["player_id"];
-                var loadedPos = data["character_x"].toString() + "-" + data["character_y"];
-
-                if (TWDW.positionDates.hasOwnProperty(loadedPos) && !newPlayersList.hasOwnProperty(playerId)) {
-                    var playerInfo = {
-                        name: data["player_name"],
-                        date: TWDW.positionDates[loadedPos],
-                        pos: loadedPos
-                    };
-                    newPlayersList[playerId] = playerInfo;
-                    if (!TWDW.playersList.hasOwnProperty(playerId)) {
-                        if (loadedPos === TWDW.currentPos) {
-                            warningListCurrentPosition.push(playerInfo);
-                        } else {
-                            warningListAllPositions.push(playerInfo);
-                        }
+            if (TWDW.positionDates.hasOwnProperty(loadedPos) && !newPlayersList.hasOwnProperty(playerId)) {
+                var playerInfo = {
+                    name: data["player_name"],
+                    date: TWDW.positionDates[loadedPos],
+                    pos: loadedPos
+                };
+                newPlayersList[playerId] = playerInfo;
+                if (!TWDW.playersList.hasOwnProperty(playerId)) {
+                    if (loadedPos === TWDW.currentPos) {
+                        warningListCurrentPosition.push(playerInfo);
+                    } else {
+                        warningListAllPositions.push(playerInfo);
                     }
                 }
             }
-        } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
-                }
-            } finally {
-                if (_didIteratorError) {
-                    throw _iteratorError;
-                }
-            }
-        }
+        });
 
         TWDW.playersList = newPlayersList;
 
         if (warningListCurrentPosition.length !== 0 || warningListAllPositions.length !== 0) {
             var playerListStr = "WARNING: NEW PLAYERS NEXT TO YOU: ";
-            var _iteratorNormalCompletion2 = true;
-            var _didIteratorError2 = false;
-            var _iteratorError2 = undefined;
-
-            try {
-                for (var _iterator2 = warningListCurrentPosition[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                    var singleWarningCurrentPosition = _step2.value;
-
-                    playerListStr += "<br />" + TWDW.getPlayerLink(singleWarningCurrentPosition.name);
-                }
-            } catch (err) {
-                _didIteratorError2 = true;
-                _iteratorError2 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                        _iterator2.return();
-                    }
-                } finally {
-                    if (_didIteratorError2) {
-                        throw _iteratorError2;
-                    }
-                }
-            }
-
-            var _iteratorNormalCompletion3 = true;
-            var _didIteratorError3 = false;
-            var _iteratorError3 = undefined;
-
-            try {
-                for (var _iterator3 = warningListAllPositions[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                    var currentWarningAllPositions = _step3.value;
-
-                    var difference = new Date().getTime() - currentWarningAllPositions.date;
-                    playerListStr += "<br />" + TWDW.getPlayerLink(currentWarningAllPositions.name) + " (at your old position " + (Math.floor(difference / 60000) + 1) + " min ago)";
-                }
-            } catch (err) {
-                _didIteratorError3 = true;
-                _iteratorError3 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                        _iterator3.return();
-                    }
-                } finally {
-                    if (_didIteratorError3) {
-                        throw _iteratorError3;
-                    }
-                }
-            }
-
+            warningListCurrentPosition.forEach(function (singleWarningCurrentPosition) {
+                return playerListStr += "<br />" + TWDW.getPlayerLink(singleWarningCurrentPosition.name);
+            });
+            warningListAllPositions.forEach(function (currentWarningAllPositions) {
+                var difference = new Date().getTime() - currentWarningAllPositions.date;
+                playerListStr += "<br />" + TWDW.getPlayerLink(currentWarningAllPositions.name) + " (at your old position " + (Math.floor(difference / 60000) + 1) + " min ago)";
+            });
             if (!document.getElementById("TWDW_Container")) {
                 document.body.insertAdjacentHTML("beforeend", "<div id=\"TWDW_Container\"></div>");
 
@@ -252,30 +185,9 @@
         var analyzeNextLevel = function analyzeNextLevel(resp) {
             var pcList = resp["oplist"]["pclist"];
 
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
-
-            try {
-                for (var _iterator4 = pcList[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                    var player = _step4.value;
-
-                    TWDW.loadedDataArray.push(player);
-                }
-            } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                        _iterator4.return();
-                    }
-                } finally {
-                    if (_didIteratorError4) {
-                        throw _iteratorError4;
-                    }
-                }
-            }
+            pcList.forEach(function (player) {
+                return TWDW.loadedDataArray.push(player);
+            });
 
             if (pcList.length >= 4 && level < 9) {
                 level++;
@@ -308,11 +220,9 @@
         if (TWDW.currentPos !== pos) {
             TWDW.currentPos = pos;
 
-            for (var property in TWDW.positionDates) {
-                if (TWDW.positionDates.hasOwnProperty(property) && currentDate - TWDW.positionDates[property] > 900000) {
-                    delete TWDW.positionDates[property];
-                }
-            }
+            Object.keys(TWDW.positionDates).forEach(function (property) {
+                return currentDate - TWDW.positionDates[property] > 900000 & delete TWDW.positionDates[property];
+            });
 
             TWDW.analyzeData();
         }

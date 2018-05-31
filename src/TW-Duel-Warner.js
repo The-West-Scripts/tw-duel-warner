@@ -70,15 +70,13 @@
         content.html("");
 
         let htmlPlayersInfo = "";
-        for (const property in TWDW.playersList) {
-            if (TWDW.playersList.hasOwnProperty(property)) {
-                htmlPlayersInfo += `, ${TWDW.getPlayerLink(TWDW.playersList[property].name)}`;
-                if (TWDW.currentPos !== TWDW.playersList[property].pos) {
-                    const difference = new Date().getTime() - TWDW.playersList[property].date;
-                    htmlPlayersInfo += ` (at your old position ${Math.floor(difference / 60000) + 1} min ago)`;
-                }
+        Object.keys(TWDW.playersList).forEach((property) => {
+            htmlPlayersInfo += `, ${TWDW.getPlayerLink(TWDW.playersList[property].name)}`;
+            if (TWDW.currentPos !== TWDW.playersList[property].pos) {
+                const difference = new Date().getTime() - TWDW.playersList[property].date;
+                htmlPlayersInfo += ` (at your old position ${Math.floor(difference / 60000) + 1} min ago)`;
             }
-        }
+        });
 
         if (TWDW.warningHighAmount) {
             content.append("<p><b>WARNING</b>: There are too many duelable players on this world to scan all of them. This script scans currently only the first 10 pages from the provided duel list (so you don't get timed out). If you are moving your character to a position far away, your current position might not be getting scanned.</p>");
@@ -132,7 +130,7 @@
         const warningListAllPositions = [];
         const newPlayersList = {};
 
-        for (const data of TWDW.loadedDataArray) {
+        TWDW.loadedDataArray.forEach((data) => {
             const playerId = data["player_id"];
             const loadedPos = `${data["character_x"].toString()}-${data["character_y"]}`;
 
@@ -151,20 +149,18 @@
                     }
                 }
             }
-        }
+        });
 
         TWDW.playersList = newPlayersList;
 
         if (warningListCurrentPosition.length !== 0 || warningListAllPositions.length !== 0) {
             let playerListStr = "WARNING: NEW PLAYERS NEXT TO YOU: ";
-            for (const singleWarningCurrentPosition of warningListCurrentPosition) {
-                playerListStr += `<br />${TWDW.getPlayerLink(singleWarningCurrentPosition.name)}`;
-            }
-            for (const currentWarningAllPositions of warningListAllPositions) {
+            warningListCurrentPosition.forEach((singleWarningCurrentPosition) => playerListStr += `<br />${TWDW.getPlayerLink(singleWarningCurrentPosition.name)}`);
+            warningListAllPositions.forEach((currentWarningAllPositions) => {
                 const difference = new Date().getTime() - currentWarningAllPositions.date;
                 playerListStr += `<br />${TWDW.getPlayerLink(currentWarningAllPositions.name)
                     } (at your old position ${Math.floor(difference / 60000) + 1} min ago)`;
-            }
+            });
             if (!document.getElementById("TWDW_Container")) {
                 document.body.insertAdjacentHTML("beforeend", "<div id=\"TWDW_Container\"></div>");
 
@@ -222,9 +218,7 @@
         const analyzeNextLevel = function (resp) {
             const pcList = resp["oplist"]["pclist"];
 
-            for (const player of pcList) {
-                TWDW.loadedDataArray.push(player);
-            }
+            pcList.forEach((player) => TWDW.loadedDataArray.push(player));
 
             if (pcList.length >= 4 && level < 9) {
                 level++;
@@ -261,11 +255,8 @@
         if (TWDW.currentPos !== pos) {
             TWDW.currentPos = pos;
 
-            for (const property in TWDW.positionDates) {
-                if (TWDW.positionDates.hasOwnProperty(property) && currentDate - TWDW.positionDates[property] > 900000) {
-                    delete TWDW.positionDates[property];
-                }
-            }
+            Object.keys(TWDW.positionDates)
+                .forEach((property) => currentDate - TWDW.positionDates[property] > 900000 & delete TWDW.positionDates[property]);
 
             TWDW.analyzeData();
         }
