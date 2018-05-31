@@ -25,8 +25,13 @@
         loadedDataArray: [],
         warningHighAmount: false,
     };
-    TWDW.initUpdater = function () {
-        const loadUpdater = function () {
+
+    TWDW.Updater = {
+        init () {
+            setTimeout(TWDW.Updater.load, 5000);
+        },
+
+        load () {
             $.getScript("https://glcdn.githack.com/knom_retsam/the-west-public/raw/master/script-updater.js", () => {
                 if (scriptUpdater.TWDW > TWDW.version) {
                     const updateMessage = new west.gui.Dialog(
@@ -39,235 +44,246 @@
                     }).addButton("cancel").show();
                 }
             });
-        };
-
-        setTimeout(loadUpdater, 5000);
+        },
     };
-    TWDW.getPlayerLink = function (name) {
-        return `<a href='javascript:void(parent.PlayerProfileWindow.open(encodeURIComponent("${name}")));'>${name}</a>`;
-    };
-    TWDW.refreshSettingsMenu = function (content) {
-        const setTitle = function (name) {
-            content.append(`<p><span style="font-size: 130%; font-weight: bold; font-style: italic; display: inline-block; margin-top: 20px;">${
-                name}</span></p>`);
-        };
 
-        const setCheckBox = function (prefName, text) {
-            const checkbox = new west.gui.Checkbox(text);
-            checkbox.setId(`TWDW_${prefName}`);
-            if (TWDW.preferences[prefName]) {
-                checkbox.toggle();
-            }
+    TWDW.Settings = {
+        init () {
+            const storage = JSON.parse(localStorage.getItem("TWDW_preferences"));
+            TWDW.preferences = storage ? storage : TWDW.defaultPreferences;
 
-            content.append(checkbox.getMainDiv(), "<br />");
-            $(content).find(`#TWDW_${prefName}`).click(() => {
-                TWDW.preferences[prefName] = checkbox.isSelected();
-                localStorage.setItem("TWDW_preferences", JSON.stringify(TWDW.preferences));
-                TWDW.refreshSettingsMenu(content);
-            });
-        };
+            const div = $("<div class=\"ui_menucontainer\" />");
+            const link = $("<div id=\"TWDW_Menu\" class=\"menulink\" title=\"The West Duel Warner\" />")
+                .css("background-image", TWDW.base64.menuImage)
+                .css("background-position", "0px 0px")
+                .mouseenter(function () {
+                    $(this).css("background-position", "-2px 0px");
+                })
+                .mouseleave(function () {
+                    $(this).css("background-position", "0px 0px");
+                });
 
-        content.html("");
-
-        let htmlPlayersInfo = "";
-        Object.keys(TWDW.playersList).forEach((property) => {
-            htmlPlayersInfo += `, ${TWDW.getPlayerLink(TWDW.playersList[property].name)}`;
-            if (TWDW.currentPos !== TWDW.playersList[property].pos) {
-                const difference = new Date().getTime() - TWDW.playersList[property].date;
-                htmlPlayersInfo += ` (at your old position ${Math.floor(difference / 60000) + 1} min ago)`;
-            }
-        });
-
-        if (TWDW.warningHighAmount) {
-            content.append("<p><b>WARNING</b>: There are too many duelable players on this world to scan all of them. This script scans currently only the first 10 pages from the provided duel list (so you don't get timed out). If you are moving your character to a position far away, your current position might not be getting scanned.</p>");
-        }
-
-        if (htmlPlayersInfo !== "") {
-            setTitle("Players next to you");
-            content.append(htmlPlayersInfo.slice(1));
-        }
-
-        setTitle("General Settings");
-        setCheckBox("enableTWDW", `Enable "The West Duel Warner" on this world (${document.domain})`);
-        setTitle("Detailed Settings");
-        setCheckBox("enableIfProtected", "Enable \"The West Duel Warner\" if you are duel protected (knocked out)");
-        setCheckBox("playSound", "Play a warning sound if somebody moves to you (or you to him)");
-        setCheckBox("repeatedSoundUntilClosed", "Repeat the warning sound until you close the warning flag.");
-        setTitle("Feedback");
-        content.append("<ul style=\"margin-left:15px;line-height:18px;\">" +
-            "<li>Send a message to <a target=\"_blanck\" href=\"https://om.the-west.net/west/de/player/?ref=west_invite_linkrl&player_id=83071&world_id=1&hash=0dc5\">Mr. Perseus on world DE1</a></li>" +
-            "<li>Contact me on <a target=\"_blanck\" href=\"https://greasyfork.org/forum/messages/add/Mr. Perseus\">Greasy Fork</a></li>" +
-            "<li>Send me a message on the <a target=\"_blanck\" href=\"https://forum.beta.the-west.net/index.php?conversations/add&to=Mr.%20Perseus\">The West Beta Forum</a> or the <a target=\"_blanck\" href=\"https://forum.the-west.de/index.php?conversations/add&to=Mr.%20Perseus\">German The West Forum</a></li>" +
-            "</ul>");
-    };
-    TWDW.initSettingsUi = function () {
-        const div = $("<div class=\"ui_menucontainer\" />");
-        const link = $("<div id=\"TWDW_Menu\" class=\"menulink\" title=\"The West Duel Warner\" />")
-            .css("background-image", TWDW.base64.menuImage)
-            .css("background-position", "0px 0px")
-            .mouseenter(function () {
-                $(this).css("background-position", "-2px 0px");
-            })
-            .mouseleave(function () {
-                $(this).css("background-position", "0px 0px");
+            $(link).on("click", () => {
+                const win = wman.open("TWDWSettings", "TWDW Settings", "noreload").setMaxSize(1268, 838).setMiniTitle("TWDW Settings");
+                const content = $("<div id=\"twdw_settings_div\"></div>");
+                TWDW.Settings.refreshMenu(content);
+                win.appendToContentPane(content);
             });
 
-        $(link).on("click", () => {
-            const win = wman.open("TWDWSettings", "TWDW Settings", "noreload").setMaxSize(1268, 838).setMiniTitle("TWDW Settings");
-            const content = $("<div id=\"twdw_settings_div\"></div>");
-            TWDW.refreshSettingsMenu(content);
-            win.appendToContentPane(content);
-        });
+            $("#ui_menubar").append((div).append(link).append("<div class=\"menucontainer_bottom\" />"));
+        },
 
-        $("#ui_menubar").append((div).append(link).append("<div class=\"menucontainer_bottom\" />"));
-    };
-    TWDW.initSettings = function () {
-        const storage = JSON.parse(localStorage.getItem("TWDW_preferences"));
-        TWDW.preferences = storage ? storage : TWDW.defaultPreferences;
-    };
-    TWDW.analyzeData = function () {
-        const warningListCurrentPosition = [];
-        const warningListAllPositions = [];
-        const newPlayersList = {};
+        refreshMenu (content) {
+            const setTitle = function (name) {
+                content.append(`<p><span style="font-size: 130%; font-weight: bold; font-style: italic; display: inline-block; margin-top: 20px;">${
+                    name}</span></p>`);
+            };
 
-        TWDW.loadedDataArray.forEach((data) => {
-            const playerId = data["player_id"];
-            const loadedPos = `${data["character_x"].toString()}-${data["character_y"]}`;
-
-            if (TWDW.positionDates.hasOwnProperty(loadedPos) && !newPlayersList.hasOwnProperty(playerId)) {
-                const playerInfo = {
-                    name: data["player_name"],
-                    date: TWDW.positionDates[loadedPos],
-                    pos: loadedPos,
-                };
-                newPlayersList[playerId] = playerInfo;
-                if (!TWDW.playersList.hasOwnProperty(playerId)) {
-                    if (loadedPos === TWDW.currentPos) {
-                        warningListCurrentPosition.push(playerInfo);
-                    } else {
-                        warningListAllPositions.push(playerInfo);
-                    }
+            const setCheckBox = function (prefName, text) {
+                const checkbox = new west.gui.Checkbox(text);
+                checkbox.setId(`TWDW_${prefName}`);
+                if (TWDW.preferences[prefName]) {
+                    checkbox.toggle();
                 }
-            }
-        });
 
-        TWDW.playersList = newPlayersList;
-
-        if (warningListCurrentPosition.length !== 0 || warningListAllPositions.length !== 0) {
-            let playerListStr = "WARNING: NEW PLAYERS NEXT TO YOU: ";
-            warningListCurrentPosition.forEach((singleWarningCurrentPosition) => playerListStr += `<br />${TWDW.getPlayerLink(singleWarningCurrentPosition.name)}`);
-            warningListAllPositions.forEach((currentWarningAllPositions) => {
-                const difference = new Date().getTime() - currentWarningAllPositions.date;
-                playerListStr += `<br />${TWDW.getPlayerLink(currentWarningAllPositions.name)
-                    } (at your old position ${Math.floor(difference / 60000) + 1} min ago)`;
-            });
-            if (!document.getElementById("TWDW_Container")) {
-                document.body.insertAdjacentHTML("beforeend", "<div id=\"TWDW_Container\"></div>");
-
-                document.getElementById("TWDW_Container").addEventListener("click", () => {
-                    document.getElementById("TWDW_Container").innerHTML = "";
-                }, false);
-            }
-
-            document.getElementById("TWDW_Container").innerHTML =
-                `${"<div id=\"TWDW_Warning\" class=\"tw2gui_dialog\" style=\"cursor: pointer; max-width: 800px; opacity: 100; left: 35%; top: 20px;\">" +
-                " <div class=\"tp_front\">" +
-                "  <div class=\"tw2gui_bg_tl\"></div>" +
-                "  <div class=\"tw2gui_bg_tr\"></div>" +
-                "  <div class=\"tw2gui_bg_bl\"></div>" +
-                "  <div class=\"tw2gui_bg_br\"></div>" +
-                " </div>" +
-                " <div class=\"tw2gui_inner_window_title\">" +
-                "  <div class=\"tw2gui_inner_window_title_left\"></div>" +
-                "  <div class=\"tw2gui_inner_window_title_right\"></div>" +
-                "  <div class=\"textart_title\" style=\"font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal; font-size: 20pt; line-height: normal; font-family: &quot;Times New Roman&quot;;\">" +
-                "TW Duel Warner" +
-                "  </div>" +
-                " </div>" +
-                " <div class=\"tw2gui_dialog_content\">" +
-                "  <div class=\"tw2gui_dialog_icon system_icon_warning\"></div>" +
-                "  <div class=\"tw2gui_dialog_text\" style=\"font-size: 20px; padding: 12px 0; max-width: 600px; float: none; margin-left: 75px;\">"}${
-                    playerListStr
-                    }  </div>` +
-                "  <div style=\"clear: both;\"></div>" +
-                " </div>" +
-                "<div>";
-
-            const playSound = function () {
-                TWDW.base64.playBeepBase64.play().then(() => {
+                content.append(checkbox.getMainDiv(), "<br />");
+                $(content).find(`#TWDW_${prefName}`).click(() => {
+                    TWDW.preferences[prefName] = checkbox.isSelected();
+                    localStorage.setItem("TWDW_preferences", JSON.stringify(TWDW.preferences));
+                    TWDW.Settings.refreshMenu(content);
                 });
             };
 
-            const playSoundRepeatedly = function () {
-                if (document.getElementById("TWDW_Container").innerHTML !== "") {
-                    playSound();
-                    setTimeout(playSoundRepeatedly, 10000);
+            content.html("");
+
+            let htmlPlayersInfo = "";
+            Object.keys(TWDW.playersList).forEach((property) => {
+                htmlPlayersInfo += `, ${TWDW.Checker.getPlayerLink(TWDW.playersList[property].name)}`;
+                if (TWDW.currentPos !== TWDW.playersList[property].pos) {
+                    const difference = new Date().getTime() - TWDW.playersList[property].date;
+                    htmlPlayersInfo += ` (at your old position ${Math.floor(difference / 60000) + 1} min ago)`;
+                }
+            });
+
+            if (TWDW.warningHighAmount) {
+                content.append("<p><b>WARNING</b>: There are too many duelable players on this world to scan all of them. This script scans currently only the first 10 pages from the provided duel list (so you don't get timed out). If you are moving your character to a position far away, your current position might not be getting scanned.</p>");
+            }
+
+            if (htmlPlayersInfo !== "") {
+                setTitle("Players next to you");
+                content.append(htmlPlayersInfo.slice(1));
+            }
+
+            setTitle("General Settings");
+            setCheckBox("enableTWDW", `Enable "The West Duel Warner" on this world (${document.domain})`);
+            setTitle("Detailed Settings");
+            setCheckBox("enableIfProtected", "Enable \"The West Duel Warner\" if you are duel protected (knocked out)");
+            setCheckBox("playSound", "Play a warning sound if somebody moves to you (or you to him)");
+            setCheckBox("repeatedSoundUntilClosed", "Repeat the warning sound until you close the warning flag.");
+            setTitle("Feedback");
+            content.append("<ul style=\"margin-left:15px;line-height:18px;\">" +
+                "<li>Send a message to <a target=\"_blanck\" href=\"https://om.the-west.net/west/de/player/?ref=west_invite_linkrl&player_id=83071&world_id=1&hash=0dc5\">Mr. Perseus on world DE1</a></li>" +
+                "<li>Contact me on <a target=\"_blanck\" href=\"https://greasyfork.org/forum/messages/add/Mr. Perseus\">Greasy Fork</a></li>" +
+                "<li>Send me a message on the <a target=\"_blanck\" href=\"https://forum.beta.the-west.net/index.php?conversations/add&to=Mr.%20Perseus\">The West Beta Forum</a> or the <a target=\"_blanck\" href=\"https://forum.the-west.de/index.php?conversations/add&to=Mr.%20Perseus\">German The West Forum</a></li>" +
+                "</ul>");
+        },
+    };
+
+    TWDW.Checker = {
+        init () {
+            TWDW.Checker.refreshOpponentChecker();
+            setInterval(TWDW.Checker.refreshPositionChecker, 10000);
+        },
+
+        refreshOpponentChecker () {
+            let level = 0;
+
+            const analyzeNextLevel = function (resp) {
+                const pcList = resp["oplist"]["pclist"];
+
+                pcList.forEach((player) => TWDW.loadedDataArray.push(player));
+
+                if (pcList.length >= 4 && level < 9) {
+                    level++;
+                    $.post(
+                        `/game.php?window=duel&action=search_op&h=${Player.h}`,
+                        {
+                            page: level,
+                        },
+                        analyzeNextLevel, "json"
+                    );
+                } else {
+                    TWDW.warningHighAmount = level >= 9;
+                    TWDW.analyzeData();
                 }
             };
 
-            if (TWDW.preferences.repeatedSoundUntilClosed) {
-                playSoundRepeatedly();
-            } else if (TWDW.preferences.playSound) {
-                playSound();
+            if (TWDW.preferences.enableTWDW && (TWDW.preferences.enableIfProtected || !Character.isDuelProtected())) {
+                TWDW.loadedDataArray = [];
+                $.getJSON(`/game.php?window=duel&action=search_op&h=${Player.h}`, analyzeNextLevel);
             }
-        }
-    };
-    TWDW.refreshOpponentChecker = function () {
-        let level = 0;
 
-        const analyzeNextLevel = function (resp) {
-            const pcList = resp["oplist"]["pclist"];
+            const interval = Math.floor(Math.random() * 120000) + 240000;
 
-            pcList.forEach((player) => TWDW.loadedDataArray.push(player));
+            console.log(`The West Duel Warner: Refreshed data, next refresh in ${interval / 60000} minutes.`);
 
-            if (pcList.length >= 4 && level < 9) {
-                level++;
-                $.post(
-                    `/game.php?window=duel&action=search_op&h=${Player.h}`,
-                    {
-                        page: level,
-                    },
-                    analyzeNextLevel, "json"
-                );
-            } else {
-                TWDW.warningHighAmount = level >= 9;
+            setTimeout(TWDW.Checker.refreshOpponentChecker, interval);
+        },
+
+        refreshPositionChecker () {
+            const currentDate = new Date().getTime();
+
+            const pos = `${Character.position.x.toString()}-${Character.position.y.toString()}`;
+            TWDW.positionDates[pos] = currentDate;
+
+            if (TWDW.currentPos !== pos) {
+                TWDW.currentPos = pos;
+
+                Object.keys(TWDW.positionDates)
+                    .forEach((property) => currentDate - TWDW.positionDates[property] > 900000 & delete TWDW.positionDates[property]);
+
                 TWDW.analyzeData();
             }
-        };
+        },
 
-        if (TWDW.preferences.enableTWDW && (TWDW.preferences.enableIfProtected || !Character.isDuelProtected())) {
-            TWDW.loadedDataArray = [];
-            $.getJSON(`/game.php?window=duel&action=search_op&h=${Player.h}`, analyzeNextLevel);
-        }
+        analyzeData () {
+            const warningListCurrentPosition = [];
+            const warningListAllPositions = [];
+            const newPlayersList = {};
 
-        const interval = Math.floor(Math.random() * 120000) + 240000;
+            TWDW.loadedDataArray.forEach((data) => {
+                const playerId = data["player_id"];
+                const loadedPos = `${data["character_x"].toString()}-${data["character_y"]}`;
 
-        console.log(`The West Duel Warner: Refreshed data, next refresh in ${interval / 60000} minutes.`);
+                if (TWDW.positionDates.hasOwnProperty(loadedPos) && !newPlayersList.hasOwnProperty(playerId)) {
+                    const playerInfo = {
+                        name: data["player_name"],
+                        date: TWDW.positionDates[loadedPos],
+                        pos: loadedPos,
+                    };
+                    newPlayersList[playerId] = playerInfo;
+                    if (!TWDW.playersList.hasOwnProperty(playerId)) {
+                        if (loadedPos === TWDW.currentPos) {
+                            warningListCurrentPosition.push(playerInfo);
+                        } else {
+                            warningListAllPositions.push(playerInfo);
+                        }
+                    }
+                }
+            });
 
-        setTimeout(TWDW.refreshOpponentChecker, interval);
+            TWDW.playersList = newPlayersList;
+
+            if (warningListCurrentPosition.length !== 0 || warningListAllPositions.length !== 0) {
+                let playerListStr = "WARNING: NEW PLAYERS NEXT TO YOU: ";
+                warningListCurrentPosition.forEach((singleWarningCurrentPosition) => playerListStr += `<br />${TWDW.Checker.getPlayerLink(singleWarningCurrentPosition.name)}`);
+                warningListAllPositions.forEach((currentWarningAllPositions) => {
+                    const difference = new Date().getTime() - currentWarningAllPositions.date;
+                    playerListStr += `<br />${TWDW.Checker.getPlayerLink(currentWarningAllPositions.name)
+                        } (at your old position ${Math.floor(difference / 60000) + 1} min ago)`;
+                });
+                if (!document.getElementById("TWDW_Container")) {
+                    document.body.insertAdjacentHTML("beforeend", "<div id=\"TWDW_Container\"></div>");
+
+                    document.getElementById("TWDW_Container").addEventListener("click", () => {
+                        document.getElementById("TWDW_Container").innerHTML = "";
+                    }, false);
+                }
+
+                document.getElementById("TWDW_Container").innerHTML =
+                    `${"<div id=\"TWDW_Warning\" class=\"tw2gui_dialog\" style=\"cursor: pointer; max-width: 800px; opacity: 100; left: 35%; top: 20px;\">" +
+                    " <div class=\"tp_front\">" +
+                    "  <div class=\"tw2gui_bg_tl\"></div>" +
+                    "  <div class=\"tw2gui_bg_tr\"></div>" +
+                    "  <div class=\"tw2gui_bg_bl\"></div>" +
+                    "  <div class=\"tw2gui_bg_br\"></div>" +
+                    " </div>" +
+                    " <div class=\"tw2gui_inner_window_title\">" +
+                    "  <div class=\"tw2gui_inner_window_title_left\"></div>" +
+                    "  <div class=\"tw2gui_inner_window_title_right\"></div>" +
+                    "  <div class=\"textart_title\" style=\"font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal; font-size: 20pt; line-height: normal; font-family: &quot;Times New Roman&quot;;\">" +
+                    "TW Duel Warner" +
+                    "  </div>" +
+                    " </div>" +
+                    " <div class=\"tw2gui_dialog_content\">" +
+                    "  <div class=\"tw2gui_dialog_icon system_icon_warning\"></div>" +
+                    "  <div class=\"tw2gui_dialog_text\" style=\"font-size: 20px; padding: 12px 0; max-width: 600px; float: none; margin-left: 75px;\">"}${
+                        playerListStr
+                        }  </div>` +
+                    "  <div style=\"clear: both;\"></div>" +
+                    " </div>" +
+                    "<div>";
+
+                const playSound = function () {
+                    TWDW.base64.playBeepBase64.play().then(() => {
+                    });
+                };
+
+                const playSoundRepeatedly = function () {
+                    if (document.getElementById("TWDW_Container").innerHTML !== "") {
+                        playSound();
+                        setTimeout(playSoundRepeatedly, 10000);
+                    }
+                };
+
+                if (TWDW.preferences.repeatedSoundUntilClosed) {
+                    playSoundRepeatedly();
+                } else if (TWDW.preferences.playSound) {
+                    playSound();
+                }
+            }
+        },
+
+        getPlayerLink (name) {
+            return `<a href='javascript:void(parent.PlayerProfileWindow.open(encodeURIComponent("${name}")));'>${name}</a>`;
+        },
     };
-    TWDW.RefreshPositionChecker = function () {
-        const currentDate = new Date().getTime();
 
-        const pos = `${Character.position.x.toString()}-${Character.position.y.toString()}`;
-        TWDW.positionDates[pos] = currentDate;
-
-        if (TWDW.currentPos !== pos) {
-            TWDW.currentPos = pos;
-
-            Object.keys(TWDW.positionDates)
-                .forEach((property) => currentDate - TWDW.positionDates[property] > 900000 & delete TWDW.positionDates[property]);
-
-            TWDW.analyzeData();
-        }
-    };
     $(document).ready(() => {
         try {
-            TWDW.initSettings();
-            TWDW.initSettingsUi();
-            TWDW.initUpdater();
-            TWDW.refreshOpponentChecker();
-            setInterval(TWDW.RefreshPositionChecker, 10000);
+            TWDW.Updater.init();
+            TWDW.Settings.init();
+            TWDW.Checker.init();
         } catch (err) {
             console.log(err.stack);
         }
