@@ -17,7 +17,7 @@
             playSound: true,
             repeatedSoundUntilClosed: false,
         },
-        version: "0.2.1",
+        version: "0.2.3",
         preferences: {},
         currentPos: "",
         positionDates: {},
@@ -154,7 +154,7 @@
                     );
                 } else {
                     TWDW.warningHighAmount = level >= 9;
-                    TWDW.analyzeData();
+                    TWDW.Checker.analyzeData();
                 }
             };
 
@@ -182,7 +182,7 @@
                 Object.keys(TWDW.positionDates)
                     .forEach((property) => currentDate - TWDW.positionDates[property] > 900000 & delete TWDW.positionDates[property]);
 
-                TWDW.analyzeData();
+                TWDW.Checker.analyzeData();
             }
         },
 
