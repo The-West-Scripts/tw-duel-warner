@@ -131,8 +131,8 @@
 
     TWDW.Checker = {
         init () {
+            TWDW.Checker.refreshPositionChecker();
             TWDW.Checker.refreshOpponentChecker();
-            setInterval(TWDW.Checker.refreshPositionChecker, 10000);
         },
 
         refreshOpponentChecker () {
@@ -180,10 +180,12 @@
                 TWDW.currentPos = pos;
 
                 Object.keys(TWDW.positionDates)
-                    .forEach((property) => currentDate - TWDW.positionDates[property] > 900000 & delete TWDW.positionDates[property]);
+                    .forEach((property) => currentDate - TWDW.positionDates[property] > 900000 && delete TWDW.positionDates[property]);
 
                 TWDW.Checker.analyzeData();
             }
+
+            setTimeout(TWDW.Checker.refreshPositionChecker, 10000);
         },
 
         analyzeData () {

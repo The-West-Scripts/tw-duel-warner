@@ -118,8 +118,8 @@
 
     TWDW.Checker = {
         init: function init() {
+            TWDW.Checker.refreshPositionChecker();
             TWDW.Checker.refreshOpponentChecker();
-            setInterval(TWDW.Checker.refreshPositionChecker, 10000);
         },
         refreshOpponentChecker: function refreshOpponentChecker() {
             var level = 0;
@@ -163,11 +163,13 @@
                 TWDW.currentPos = pos;
 
                 Object.keys(TWDW.positionDates).forEach(function (property) {
-                    return currentDate - TWDW.positionDates[property] > 900000 & delete TWDW.positionDates[property];
+                    return currentDate - TWDW.positionDates[property] > 900000 && delete TWDW.positionDates[property];
                 });
 
                 TWDW.Checker.analyzeData();
             }
+
+            setTimeout(TWDW.Checker.refreshPositionChecker, 10000);
         },
         analyzeData: function analyzeData() {
             var warningListCurrentPosition = [];
