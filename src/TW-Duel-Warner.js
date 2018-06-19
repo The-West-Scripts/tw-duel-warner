@@ -215,7 +215,6 @@
 
             TWDW.loadedDataArray.forEach((data) => {
                 const playerName = data["player_name"];
-                console.log("PLAYER NAME", playerName);
                 const playerId = data["player_id"];
                 const loadedPos = `${data["character_x"].toString()}-${data["character_y"]}`;
 
@@ -246,7 +245,8 @@
             TWDW.playersList = newPlayersList;
             TWDW.currentWatchList = newCurrentWatchList;
 
-            if (warningListCurrentPosition.length !== 0 || warningListAllPositions.length !== 0) {
+            const isWarning = warningListCurrentPosition.length !== 0 || warningListAllPositions.length !== 0;
+            if (isWarning) {
                 let playerListStr = "WARNING: NEW PLAYERS NEXT TO YOU: ";
                 warningListCurrentPosition.forEach((singleWarningCurrentPosition) => playerListStr += `<br />${TWDW.Checker.getPlayerLink(singleWarningCurrentPosition.name)}`);
                 warningListAllPositions.forEach((currentWarningAllPositions) => {
@@ -258,11 +258,19 @@
                 TWDW.Checker.notify(playerListStr, "system_icon_warning", TWDW.base64.playBeepBase64);
             }
 
-            if (warningListWatchList.length !== 0) {
+            const notifyWatchList = function () {
                 let playerListStr = "PLAYERS ON WATCH LIST ATTACKABLE: ";
                 warningListWatchList.forEach((warningPlayer) => playerListStr += `<br />${TWDW.Checker.getPlayerLink(warningPlayer)}`);
 
                 TWDW.Checker.notify(playerListStr, "system_icon_ok", TWDW.base64.playWatchedPlayersBase64);
+            };
+
+            if (warningListWatchList.length !== 0) {
+                if (isWarning) {
+                    setTimeout(notifyWatchList, 10000);
+                } else {
+                    notifyWatchList();
+                }
             }
         },
 
