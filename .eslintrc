@@ -15,7 +15,8 @@
     "scriptUpdater": true,
     "ItemManager": true,
     "PlayerProfileWindow": true,
-    "PlayerProfileMain": true
+    "PlayerProfileMain": true,
+    "UserMessage": true
   },
   "rules": {
     "no-console": "off",
