@@ -19,7 +19,7 @@
             repeatedSoundUntilClosed: false,
             watchedPlayers: "",
         },
-        version: "0.2.9",
+        version: "0.3.0",
         preferences: {},
         currentPos: "",
         positionDates: {},
@@ -35,7 +35,7 @@
         },
 
         load () {
-            $.getScript("https://glcdn.githack.com/knom_retsam/the-west-public/raw/master/script-updater.js", () => {
+            $.getScript("https://rawcdn.githack.com/mr-perseus/tw-js-library/master/script-updater.js", () => {
                 if (scriptUpdater.TWDW > TWDW.version) {
                     const updateMessage = new west.gui.Dialog(
                         "Update: The West Duel Warner",
