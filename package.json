@@ -1,10 +1,8 @@
 {
   "scripts": {
-    "build": "babel src/TW-Duel-Warner.js --out-file dist/TW-Duel-Warner-Babel.js && babel-minify dist/TW-Duel-Warner-Babel.js --out-file dist/tw-duel-warner.user.js"
+    "build": "babel-minify src/TW-Duel-Warner.js --out-file dist/tw-duel-warner.min.js && copy /b \"src\\Script-Header.js\"+\"dist\\tw-duel-warner.min.js\" \"dist\\tw-duel-warner.user.js\""
   },
   "devDependencies": {
-    "babel-preset-env": "^1.7.0",
-    "babel-cli": "^6.26.0",
     "babel-minify": "^0.4.3",
     "eslint": "^4.19.1"
   }
