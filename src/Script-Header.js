@@ -7,7 +7,7 @@
 // @include     http://*.the-west.*/game.php*
 // @include     https://*.tw.innogames.*/game.php*
 // @include     http://*.tw.innogames.*/game.php*
-// @version     0.2.3
+// @version     0.2.9
 // @grant       none
 // ==/UserScript==
 

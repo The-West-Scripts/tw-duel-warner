@@ -19,7 +19,7 @@
             repeatedSoundUntilClosed: false,
             watchedPlayers: "",
         },
-        version: "0.2.3",
+        version: "0.2.9",
         preferences: {},
         currentPos: "",
         positionDates: {},
@@ -67,31 +67,32 @@
                 });
 
             $(link).on("click", () => {
-                const win = wman.open("TWDWSettings", "TWDW Settings", "noreload").setMaxSize(1268, 838).setMiniTitle("TWDW Settings");
-                const content = $("<div id=\"twdw_settings_div\"></div>");
-                TWDW.Settings.refreshMenu(content);
-                win.appendToContentPane(content);
+                TWDW.Settings.refreshMenu();
             });
 
             $("#ui_menubar").append((div).append(link).append("<div class=\"menucontainer_bottom\" />"));
         },
 
-        refreshMenu (content) {
+        refreshMenu () {
+            const win = wman.open("TWDWSettings", "TWDW Settings", "noreload").setMaxSize(1268, 838).setMiniTitle("TWDW Settings");
+            const scrollPane = new west.gui.Scrollpane();
+
             const setTextField = function (prefName, description) {
                 const input = new west.gui.Textfield(`#TWDW_${prefName}`, "text");
                 input.setValue(TWDW.preferences[prefName]);
-                content.append(input.getMainDiv());
+                scrollPane.appendContent(input.getMainDiv());
                 const button = new west.gui.Button("Save", () => {
                     TWDW.preferences[prefName] = input.getValue();
                     localStorage.setItem("TWDW_preferences", JSON.stringify(TWDW.preferences));
-                    TWDW.Settings.refreshMenu(content);
+                    TWDW.Settings.refreshMenu();
                     new UserMessage("Okay", "success").show();
                 });
-                content.append(button.getMainDiv(), "<br />", description);
+                scrollPane.appendContent(button.getMainDiv());
+                scrollPane.appendContent(`<br /> ${description}`);
             };
 
             const setTitle = function (name) {
-                content.append(`<p><span style="font-size: 130%; font-weight: bold; font-style: italic; display: inline-block; margin-top: 20px;">${
+                scrollPane.appendContent(`<p><span style="font-size: 130%; font-weight: bold; font-style: italic; display: inline-block; margin-top: 20px;">${
                     name}</span></p>`);
             };
 
@@ -101,16 +102,14 @@
                 if (TWDW.preferences[prefName]) {
                     checkbox.toggle();
                 }
-
-                content.append(checkbox.getMainDiv(), "<br />");
-                $(content).find(`#TWDW_${prefName}`).click(() => {
+                checkbox.setCallback(() => {
                     TWDW.preferences[prefName] = checkbox.isSelected();
                     localStorage.setItem("TWDW_preferences", JSON.stringify(TWDW.preferences));
-                    TWDW.Settings.refreshMenu(content);
+                    TWDW.Settings.refreshMenu();
+                    new UserMessage("Okay", "success").show();
                 });
+                scrollPane.appendContent(checkbox.getMainDiv());
             };
-
-            content.html("");
 
             let htmlPlayersInfo = "";
             Object.keys(TWDW.playersList).forEach((property) => {
@@ -122,12 +121,12 @@
             });
 
             if (TWDW.warningHighAmount) {
-                content.append("<p><b>WARNING</b>: There are too many duelable players on this world to scan all of them. This script scans currently only the first 10 pages from the provided duel list (so you don't get timed out). If you are moving your character to a position far away, your current position might not be getting scanned.</p>");
+                scrollPane.appendContent("<p><b>WARNING</b>: There are too many duelable players on this world to scan all of them. This script scans currently only the first 10 pages from the provided duel list (so you don't get timed out). If you are moving your character to a position far away, your current position might not be getting scanned.</p>");
             }
 
             if (htmlPlayersInfo !== "") {
                 setTitle("Players next to you");
-                content.append(htmlPlayersInfo.slice(1));
+                scrollPane.appendContent(htmlPlayersInfo.slice(1));
             }
 
             setTitle("General Settings");
@@ -139,11 +138,13 @@
             setTitle("Watched Players");
             setTextField("watchedPlayers", "Enter the players to watch (comma separated, e.g.: \"Player1,Player2\"). If a player on this list gets attackable, you get notified.");
             setTitle("Feedback");
-            content.append("<ul style=\"margin-left:15px;line-height:18px;\">" +
+            scrollPane.appendContent("<ul style=\"margin-left:15px;line-height:18px;\">" +
                 "<li>Send a message to <a target=\"_blanck\" href=\"https://om.the-west.net/west/de/player/?ref=west_invite_linkrl&player_id=83071&world_id=1&hash=0dc5\">Mr. Perseus on world DE1</a></li>" +
                 "<li>Contact me on <a target=\"_blanck\" href=\"https://greasyfork.org/forum/messages/add/Mr. Perseus\">Greasy Fork</a></li>" +
                 "<li>Send me a message on the <a target=\"_blanck\" href=\"https://forum.beta.the-west.net/index.php?conversations/add&to=Mr.%20Perseus\">The West Beta Forum</a> or the <a target=\"_blanck\" href=\"https://forum.the-west.de/index.php?conversations/add&to=Mr.%20Perseus\">German The West Forum</a></li>" +
                 "</ul>");
+
+            win.appendToContentPane(scrollPane.getMainDiv());
         },
     };
 
