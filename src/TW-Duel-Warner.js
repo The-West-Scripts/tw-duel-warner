@@ -1,3 +1,16 @@
+// ==UserScript==
+// @name        The West Duel Warner
+// @author      Mr. Perseus
+// @namespace   tw-perseus
+// @description Warns if somebody is in duel range.
+// @include     https://*.the-west.*/game.php*
+// @include     http://*.the-west.*/game.php*
+// @include     https://*.tw.innogames.*/game.php*
+// @include     http://*.tw.innogames.*/game.php*
+// @version     0.3.1
+// @grant       none
+// ==/UserScript==
+
 /*globals $*/
 (function (fn) {
     const script = document.createElement("script");
@@ -18,8 +31,9 @@
             playSound: true,
             repeatedSoundUntilClosed: false,
             watchedPlayers: "",
+            allPlayersWatched: false,
         },
-        version: "0.3.0",
+        version: "0.3.1",
         preferences: {},
         currentPos: "",
         positionDates: {},
@@ -88,7 +102,7 @@
                     new UserMessage("Okay", "success").show();
                 });
                 scrollPane.appendContent(button.getMainDiv());
-                scrollPane.appendContent(`<br /> ${description}`);
+                scrollPane.appendContent(`<br /> ${description} <br />`);
             };
 
             const setTitle = function (name) {
@@ -129,6 +143,13 @@
                 scrollPane.appendContent(htmlPlayersInfo.slice(1));
             }
 
+            let htmlWatchListInfo = "";
+            TWDW.currentWatchList.forEach((player) => htmlWatchListInfo += `, ${TWDW.Checker.getPlayerLink(player)}`);
+            if (htmlWatchListInfo !== "") {
+                setTitle("Players on Watch list attackable");
+                scrollPane.appendContent(htmlWatchListInfo.slice(1));
+            }
+
             setTitle("General Settings");
             setCheckBox("enableTWDW", `Enable "The West Duel Warner" on this world (${document.domain})`);
             setTitle("Detailed Settings");
@@ -137,12 +158,13 @@
             setCheckBox("repeatedSoundUntilClosed", "Repeat the warning sound until you close the warning flag.");
             setTitle("Watched Players");
             setTextField("watchedPlayers", "Enter the players to watch (comma separated, e.g.: \"Player1,Player2\"). If a player on this list gets attackable, you get notified.");
+            setCheckBox("allPlayersWatched", "Watch all players");
             setTitle("Feedback");
             scrollPane.appendContent("<ul style=\"margin-left:15px;line-height:18px;\">" +
-                "<li>Send a message to <a target=\"_blanck\" href=\"https://om.the-west.net/west/de/player/?ref=west_invite_linkrl&player_id=83071&world_id=1&hash=0dc5\">Mr. Perseus on world DE1</a></li>" +
-                "<li>Contact me on <a target=\"_blanck\" href=\"https://greasyfork.org/forum/messages/add/Mr. Perseus\">Greasy Fork</a></li>" +
-                "<li>Send me a message on the <a target=\"_blanck\" href=\"https://forum.beta.the-west.net/index.php?conversations/add&to=Mr.%20Perseus\">The West Beta Forum</a> or the <a target=\"_blanck\" href=\"https://forum.the-west.de/index.php?conversations/add&to=Mr.%20Perseus\">German The West Forum</a></li>" +
-                "</ul>");
+                "<li>Send a message to <a target=\"_blank\" href=\"https://www.the-west.de/?ref=west_invite_linkrl&player_id=83071&world_id=1&hash=0dc5\">Mr. Perseus on world DE1</a></li>" +
+                "<li>Contact me on <a target=\"_blank\" href=\"https://greasyfork.org/forum/messages/add/Mr. Perseus\">Greasy Fork</a></li>" +
+                "<li>Send me a message on the <a target=\"_blank\" href=\"https://forum.beta.the-west.net/index.php?conversations/add&to=Mr.%20Perseus\">The West Beta Forum</a> or the <a target=\"_blank\" href=\"https://forum.the-west.de/index.php?conversations/add&to=Mr.%20Perseus\">German The West Forum</a></li>" +
+                "</ul><br />Check out other scripts on <a target=\"_blank\" href=\"https://greasyfork.org/de/users/179973-mr-perseus\">Greasyfork</a>.");
 
             win.appendToContentPane(scrollPane.getMainDiv());
         },
@@ -235,7 +257,7 @@
                     }
                 }
 
-                if (TWDW.preferences.watchedPlayers && TWDW.preferences.watchedPlayers.toLowerCase().indexOf(playerName.toLowerCase()) > -1) {
+                if (TWDW.preferences.allPlayersWatched || (TWDW.preferences.watchedPlayers && TWDW.preferences.watchedPlayers.toLowerCase().indexOf(playerName.toLowerCase()) > -1)) {
                     newCurrentWatchList.push(playerName);
                     if (TWDW.currentWatchList.indexOf(playerName) === -1) {
                         warningListWatchList.push(playerName);

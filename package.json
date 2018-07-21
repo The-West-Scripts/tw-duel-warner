@@ -1,9 +1,5 @@
 {
-  "scripts": {
-    "build": "babel-minify src/TW-Duel-Warner.js --out-file dist/tw-duel-warner.min.js && copy /b \"src\\Script-Header.js\"+\"dist\\tw-duel-warner.min.js\" \"dist\\tw-duel-warner.user.js\""
-  },
   "devDependencies": {
-    "babel-minify": "^0.4.3",
     "eslint": "^4.19.1"
   }
 }
