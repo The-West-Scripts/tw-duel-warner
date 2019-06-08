@@ -40,6 +40,7 @@ if (typeof GM_notification === "function") {
             enableIfProtected: false,
             playSound: true,
             repeatedSoundUntilClosed: false,
+            disableNotifications: false,
             watchedPlayers: "",
             allPlayersWatched: false,
         },
@@ -62,21 +63,6 @@ if (typeof GM_notification === "function") {
                 }
                 // eslint-disable-next-line camelcase
                 window.GM_notification = function (ntcOptions) {
-                    checkPermission();
-
-                    const checkPermission = function () {
-                        if (Notification.permission === "granted") {
-                            fireNotice();
-                        } else if (Notification.permission === "denied") {
-                            console.log("User has denied notifications for this page/site!");
-                        } else {
-                            Notification.requestPermission((permission) => {
-                                console.log("New permission: ", permission);
-                                checkPermission();
-                            });
-                        }
-                    };
-
                     const fireNotice = function () {
                         if (!ntcOptions.title) {
                             console.log("Title is required for notification");
@@ -96,10 +82,29 @@ if (typeof GM_notification === "function") {
                             }, ntcOptions.timeout);
                         }
                     };
+
+                    const checkPermission = function () {
+                        if (Notification.permission === "granted") {
+                            fireNotice();
+                        } else if (Notification.permission === "denied") {
+                            console.log("User has denied notifications for this page/site!");
+                        } else {
+                            Notification.requestPermission((permission) => {
+                                console.log("New permission: ", permission);
+                                checkPermission();
+                            });
+                        }
+                    };
+
+                    checkPermission();
                 };
             };
 
-            initNotificationFirefox();
+            try {
+                initNotificationFirefox();
+            } catch (err) {
+                console.log(err.stack);
+            }
         },
 
         notify (text, title) {
@@ -177,7 +182,7 @@ if (typeof GM_notification === "function") {
                     TWDW.preferences[prefName] = input.getValue();
                     localStorage.setItem("TWDW_preferences", JSON.stringify(TWDW.preferences));
                     TWDW.Settings.refreshMenu();
-                    new UserMessage("Okay", "success").show();
+                    new UserMessage("Okay. Please refresh the page.", "success").show();
                 });
                 scrollPane.appendContent(button.getMainDiv());
                 scrollPane.appendContent(`<br /> ${description} <br />`);
@@ -198,7 +203,7 @@ if (typeof GM_notification === "function") {
                     TWDW.preferences[prefName] = checkbox.isSelected();
                     localStorage.setItem("TWDW_preferences", JSON.stringify(TWDW.preferences));
                     TWDW.Settings.refreshMenu();
-                    new UserMessage("Okay", "success").show();
+                    new UserMessage("Okay. Please refresh the page.", "success").show();
                 });
                 scrollPane.appendContent(checkbox.getMainDiv());
             };
@@ -234,6 +239,7 @@ if (typeof GM_notification === "function") {
             setCheckBox("enableIfProtected", "Enable \"The West Duel Warner\" if you are duel protected (knocked out)");
             setCheckBox("playSound", "Play a warning sound if somebody moves to you (or you to him)");
             setCheckBox("repeatedSoundUntilClosed", "Repeat the warning sound until you close the warning flag.");
+            setCheckBox("disableNotifications", "Disable system notifications for duel warnings (i.e. if a new player moves to your position).");
             setTitle("Watched Players");
             setTextField("watchedPlayers", "Enter the players to watch (comma separated, e.g.: \"Player1,Player2\"). If a player on this list gets attackable, you get notified.");
             setCheckBox("allPlayersWatched", "Watch all players");
@@ -430,7 +436,9 @@ if (typeof GM_notification === "function") {
                 }
             };
 
-            TWDW.Notifier.notify(textWithoutLink, "The West Duel Warner");
+            if (!TWDW.preferences.disableNotifications) {
+                TWDW.Notifier.notify(textWithoutLink, "The West Duel Warner");
+            }
 
             if (TWDW.preferences.repeatedSoundUntilClosed) {
                 playSoundRepeatedly();
