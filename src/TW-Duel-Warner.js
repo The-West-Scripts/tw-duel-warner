@@ -13,18 +13,14 @@
 // ==/UserScript==
 
 /*globals $*/
-// eslint-disable-next-line no-undef
-twdwSendNotification = function (text, title) {
-    // eslint-disable-next-line new-cap
-    GM_notification({
-        text,
-        title,
-        timeout: 15000,
-        onclick () {
-            window.focus();
-        },
-    });
-};
+// eslint-disable-next-line camelcase
+if (typeof GM_notification === "function") {
+    // eslint-disable-next-line no-undef
+    globalSendNotification = function (body) {
+        // eslint-disable-next-line new-cap
+        GM_notification(body);
+    };
+}
 
 (function (fn) {
     const script = document.createElement("script");
@@ -55,6 +51,74 @@ twdwSendNotification = function (text, title) {
         loadedDataArray: [],
         warningHighAmount: false,
         currentWatchList: [],
+    };
+
+    TWDW.Notifier = {
+        init () {
+            const initNotificationFirefox = function () {
+                // eslint-disable-next-line camelcase
+                if (typeof globalSendNotification === "function") {
+                    return;
+                }
+                // eslint-disable-next-line camelcase
+                window.GM_notification = function (ntcOptions) {
+                    checkPermission();
+
+                    const checkPermission = function () {
+                        if (Notification.permission === "granted") {
+                            fireNotice();
+                        } else if (Notification.permission === "denied") {
+                            console.log("User has denied notifications for this page/site!");
+                        } else {
+                            Notification.requestPermission((permission) => {
+                                console.log("New permission: ", permission);
+                                checkPermission();
+                            });
+                        }
+                    };
+
+                    const fireNotice = function () {
+                        if (!ntcOptions.title) {
+                            console.log("Title is required for notification");
+                            return;
+                        }
+                        if (ntcOptions.text && !ntcOptions.body) {
+                            ntcOptions.body = ntcOptions.text;
+                        }
+                        const ntfctn = new Notification(ntcOptions.title, ntcOptions);
+
+                        if (ntcOptions.onclick) {
+                            ntfctn.onclick = ntcOptions.onclick;
+                        }
+                        if (ntcOptions.timeout) {
+                            setTimeout(() => {
+                                ntfctn.close();
+                            }, ntcOptions.timeout);
+                        }
+                    };
+                };
+            };
+
+            initNotificationFirefox();
+        },
+
+        notify (text, title) {
+            // eslint-disable-next-line no-undef,camelcase
+            const notificationFunction = typeof globalSendNotification === "function" ? globalSendNotification : GM_notification;
+
+            if (typeof notificationFunction === "function") {
+                notificationFunction({
+                    text,
+                    title,
+                    timeout: 15000,
+                    onclick () {
+                        window.focus();
+                    },
+                });
+            } else {
+                console.log("TWDW Error: No Notification function defined.");
+            }
+        },
     };
 
     TWDW.Updater = {
@@ -355,9 +419,6 @@ twdwSendNotification = function (text, title) {
                 "<div>";
 
             const playSound = function () {
-                // eslint-disable-next-line no-undef
-                twdwSendNotification(textWithoutLink, "The West Duel Warner");
-
                 sound.play().then(() => {
                 });
             };
@@ -368,6 +429,8 @@ twdwSendNotification = function (text, title) {
                     setTimeout(playSoundRepeatedly, 10000);
                 }
             };
+
+            TWDW.Notifier.notify(textWithoutLink, "The West Duel Warner");
 
             if (TWDW.preferences.repeatedSoundUntilClosed) {
                 playSoundRepeatedly();
@@ -383,6 +446,7 @@ twdwSendNotification = function (text, title) {
 
     $(document).ready(() => {
         try {
+            TWDW.Notifier.init();
             TWDW.Updater.init();
             TWDW.Settings.init();
             TWDW.Checker.init();
