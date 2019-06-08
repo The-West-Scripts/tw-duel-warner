@@ -7,11 +7,25 @@
 // @include     http://*.the-west.*/game.php*
 // @include     https://*.tw.innogames.*/game.php*
 // @include     http://*.tw.innogames.*/game.php*
-// @version     0.3.1
-// @grant       none
+// @version     0.9.0
+// @grant       GM_notification
+// @grant       window.focus
 // ==/UserScript==
 
 /*globals $*/
+// eslint-disable-next-line no-undef
+twdwSendNotification = function (text, title) {
+    // eslint-disable-next-line new-cap
+    GM_notification({
+        text,
+        title,
+        timeout: 15000,
+        onclick () {
+            window.focus();
+        },
+    });
+};
+
 (function (fn) {
     const script = document.createElement("script");
     script.setAttribute("type", "application/javascript");
@@ -33,7 +47,7 @@
             watchedPlayers: "",
             allPlayersWatched: false,
         },
-        version: "0.3.1",
+        version: "0.9.0",
         preferences: {},
         currentPos: "",
         positionDates: {},
@@ -270,22 +284,33 @@
 
             const isWarning = warningListCurrentPosition.length !== 0 || warningListAllPositions.length !== 0;
             if (isWarning) {
-                let playerListStr = "WARNING: NEW PLAYERS NEXT TO YOU: ";
-                warningListCurrentPosition.forEach((singleWarningCurrentPosition) => playerListStr += `<br />${TWDW.Checker.getPlayerLink(singleWarningCurrentPosition.name)}`);
+                let playerListStr = "WARNING: NEW PLAYERS NEXT TO YOU:\n";
+                let playerListStringWithoutLink = playerListStr;
+                warningListCurrentPosition.forEach((singleWarningCurrentPosition) => {
+                    playerListStr += `<br />${TWDW.Checker.getPlayerLink(singleWarningCurrentPosition.name)}`;
+                    playerListStringWithoutLink += `${singleWarningCurrentPosition.name}, `;
+                });
+                playerListStringWithoutLink = playerListStringWithoutLink.substring(0, playerListStringWithoutLink.length - 2);
+
                 warningListAllPositions.forEach((currentWarningAllPositions) => {
                     const difference = new Date().getTime() - currentWarningAllPositions.date;
                     playerListStr += `<br />${TWDW.Checker.getPlayerLink(currentWarningAllPositions.name)
                         } (at your old position ${Math.floor(difference / 60000) + 1} min ago)`;
                 });
 
-                TWDW.Checker.notify(playerListStr, "system_icon_warning", TWDW.base64.playBeepBase64);
+                TWDW.Checker.notify(playerListStr, "system_icon_warning", TWDW.base64.playBeepBase64, playerListStringWithoutLink);
             }
 
             const notifyWatchList = function () {
-                let playerListStr = "PLAYERS ON WATCH LIST ATTACKABLE: ";
-                warningListWatchList.forEach((warningPlayer) => playerListStr += `<br />${TWDW.Checker.getPlayerLink(warningPlayer)}`);
+                let playerListStr = "PLAYERS ON WATCH LIST ATTACKABLE:\n";
+                let playerListStringWithoutLink = playerListStr;
+                warningListWatchList.forEach((warningPlayer) => {
+                    playerListStr += `<br />${TWDW.Checker.getPlayerLink(warningPlayer)}`;
+                    playerListStringWithoutLink += `${warningPlayer}, `;
+                });
+                playerListStringWithoutLink = playerListStringWithoutLink.substring(0, playerListStringWithoutLink.length - 2);
 
-                TWDW.Checker.notify(playerListStr, "system_icon_ok", TWDW.base64.playWatchedPlayersBase64);
+                TWDW.Checker.notify(playerListStr, "system_icon_ok", TWDW.base64.playWatchedPlayersBase64, playerListStringWithoutLink);
             };
 
             if (warningListWatchList.length !== 0) {
@@ -297,7 +322,7 @@
             }
         },
 
-        notify (text, type, sound) {
+        notify (text, type, sound, textWithoutLink) {
             if (!document.getElementById("TWDW_Container")) {
                 document.body.insertAdjacentHTML("beforeend", "<div id=\"TWDW_Container\"></div>");
 
@@ -330,6 +355,9 @@
                 "<div>";
 
             const playSound = function () {
+                // eslint-disable-next-line no-undef
+                twdwSendNotification(textWithoutLink, "The West Duel Warner");
+
                 sound.play().then(() => {
                 });
             };

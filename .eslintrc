@@ -16,7 +16,8 @@
     "ItemManager": true,
     "PlayerProfileWindow": true,
     "PlayerProfileMain": true,
-    "UserMessage": true
+    "UserMessage": true,
+    "GM_notification": true
   },
   "rules": {
     "no-console": "off",
