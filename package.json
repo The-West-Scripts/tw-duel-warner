@@ -1,6 +1,6 @@
 {
   "name": "tw-duel-warner",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "author": "mr-perseus",
   "license": "MIT",
   "description": "Userscript for The West. Warns if somebody is in duel range.",

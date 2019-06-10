@@ -7,7 +7,7 @@
 // @include     http://*.the-west.*/game.php*
 // @include     https://*.tw.innogames.*/game.php*
 // @include     http://*.tw.innogames.*/game.php*
-// @version     0.9.0
+// @version     1.0.0
 // @grant       GM_notification
 // @grant       window.focus
 // ==/UserScript==
@@ -44,7 +44,7 @@ if (typeof GM_notification === "function") {
             watchedPlayers: "",
             allPlayersWatched: false,
         },
-        version: "0.9.0",
+        version: "1.0.0",
         preferences: {},
         currentPos: "",
         positionDates: {},
