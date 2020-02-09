@@ -7,7 +7,7 @@
 // @include     http://*.the-west.*/game.php*
 // @include     https://*.tw.innogames.*/game.php*
 // @include     http://*.tw.innogames.*/game.php*
-// @version     1.0.0
+// @version     1.0.1
 // @grant       GM_notification
 // @grant       window.focus
 // ==/UserScript==
@@ -45,7 +45,7 @@ if (typeof GM_notification === 'function') {
             watchedPlayers: '',
             allPlayersWatched: false,
         },
-        version: '1.0.0',
+        version: '1.0.1',
         preferences: {},
         currentPos: '',
         positionDates: {},
@@ -381,12 +381,6 @@ if (typeof GM_notification === 'function') {
 
             if (TWDW.currentPos !== pos) {
                 TWDW.currentPos = pos;
-
-                Object.keys(TWDW.positionDates).forEach(
-                    (property) =>
-                        currentDate - TWDW.positionDates[property] > 900000 &&
-                        delete TWDW.positionDates[property],
-                );
 
                 TWDW.Checker.analyzeData();
             }
