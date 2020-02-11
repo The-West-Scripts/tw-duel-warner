@@ -19,6 +19,7 @@ module.exports = {
         'no-console': 'off',
         camelcase: ['error', { allow: ['GM_notification'] }],
         'dot-notation': 'off',
+        'no-prototype-builtins': 'off',
     },
     globals: {
         GM_notification: true,
