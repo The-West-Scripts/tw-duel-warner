@@ -18,6 +18,7 @@ module.exports = {
         'no-param-reassign': 'off',
         'no-console': 'off',
         camelcase: ['error', { allow: ['GM_notification'] }],
+        'dot-notation': 'off',
     },
     globals: {
         GM_notification: true,

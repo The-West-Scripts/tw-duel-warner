@@ -7,7 +7,7 @@
 // @include     http://*.the-west.*/game.php*
 // @include     https://*.tw.innogames.*/game.php*
 // @include     http://*.tw.innogames.*/game.php*
-// @version     1.0.1
+// @version     1.0.2
 // @grant       GM_notification
 // @grant       window.focus
 // ==/UserScript==
@@ -45,7 +45,7 @@ if (typeof GM_notification === 'function') {
             watchedPlayers: '',
             allPlayersWatched: false,
         },
-        version: '1.0.1',
+        version: '1.0.2',
         preferences: {},
         currentPos: '',
         positionDates: {},
@@ -331,7 +331,7 @@ if (typeof GM_notification === 'function') {
             let level = 0;
 
             const analyzeNextLevel = function(resp) {
-                const pcList = resp.oplist.pclist;
+                const pcList = resp['oplist']['pclist'];
 
                 pcList.forEach((player) => TWDW.loadedDataArray.push(player));
 
@@ -396,10 +396,10 @@ if (typeof GM_notification === 'function') {
             const warningListWatchList = [];
 
             TWDW.loadedDataArray.forEach((data) => {
-                const playerName = data.player_name;
-                const playerId = data.player_id;
-                const loadedPos = `${data.character_x.toString()}-${
-                    data.character_y
+                const playerName = data['player_name'];
+                const playerId = data['player_id'];
+                const loadedPos = `${data['character_x'].toString()}-${
+                    data['character_y']
                 }`;
 
                 if (
@@ -410,7 +410,7 @@ if (typeof GM_notification === 'function') {
                     )
                 ) {
                     const playerInfo = {
-                        name: data.player_name,
+                        name: data['player_name'],
                         date: TWDW.positionDates[loadedPos],
                         pos: loadedPos,
                     };
