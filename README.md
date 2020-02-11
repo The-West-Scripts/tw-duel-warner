@@ -23,3 +23,7 @@ New Features in Version 0.2.0:
 -   Play a repeated sound until you closed the warning flag (disabled by default)
 -   Warns if somebody moves to one of your old positions (tracks back up to 15 minutes)
 -   Other small improvements
+
+Download from Greasyfork: https://greasyfork.org/en/scripts/40902-the-west-duel-warner
+
+Report a bug on GitHub: https://github.com/The-West-Scripts/tw-duel-warner/issues/new
