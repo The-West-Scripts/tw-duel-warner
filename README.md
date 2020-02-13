@@ -1,29 +1,52 @@
-# tw-duel-warner
+## Install URL
+
+[Click here to install](https://the-west-scripts.github.io/tw-duel-warner/script.user.js)
+
+## Description & Sreenshots
 
 Userscript for The West. Warns if somebody is in duel range.
 
-<a href="https://forum.the-west.de/index.php?threads/aktuelle-%C3%9Cbersicht-aller-skripte-2020.75033/">It's now officially allowed to use this script on German worlds.</a>
+**Duel warner**  
+Warns if someone moves to your position. A sound gets played and the following flag is shown:
+![](img/warn-flag.png)
 
-Warns you if somebody who could duel you moves to your position (or you move to his).
+**New players attachable**
+Warns if a player got attackable (which means for a player with character class "Dueller" that he could be attacking you).
+![](img/players-attackable.jpg)
 
-New Feature in Version 1.0.0:
+**System Notification**
+For the two features above, fire a system notification.
+![](img/system-notification.png)
 
--   Fire a system notification if a player moves to your position / if a player on your watch list gets attackable.
+**Settings**
+Configure The West Duel Warner. Please refresh the page after changing anything.
+![](img/settings.png)
 
-New Feature in Version 0.3.0:
+## Comments
 
--   Watched Players (if a player on the list gets attackable you get notified)
+[It's now officially allowed to use this script on German worlds.](https://forum.the-west.de/index.php?threads/aktuelle-%C3%9Cbersicht-aller-skripte-2020.75033/)
 
-New Features in Version 0.2.0:
+[Report a bug](https://github.com/The-West-Scripts/tw-duel-warner/issues/new)
 
--   Autoupdater
--   Enable / Disable TWDW for every world (enabled by default)
--   Enable / Disable TWDW if you are duel protected (disabled by default)
--   Play a warning sound (enabled by default)
--   Play a repeated sound until you closed the warning flag (disabled by default)
--   Warns if somebody moves to one of your old positions (tracks back up to 15 minutes)
--   Other small improvements
+[Greasyfork listing](https://greasyfork.org/en/scripts/40902-the-west-duel-warner)
 
-Download from Greasyfork: https://greasyfork.org/en/scripts/40902-the-west-duel-warner
+## Installation
 
-Report a bug on GitHub: https://github.com/The-West-Scripts/tw-duel-warner/issues/new
+Install first the browser extension for your browser:
+
+-   ![](https://imgur.com/UTxgUkJ.jpg) Firefox: [Greasemonkey](https://addons.mozilla.org/firefox/addon/greasemonkey/)
+-   ![](https://imgur.com/KSoOXLJ.png) Chrome: [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo/)
+-   ![](https://imgur.com/QbACShJ.png) Microsoft Edge: [Tampermonkey](https://www.microsoft.com/store/p/tampermonkey/9nblggh5162s/)
+-   ![](https://imgur.com/S6GHleD.png) Safari: [Tampermonkey](https://safari.tampermonkey.net/tampermonkey.safariextz)
+-   ![](https://imgur.com/sDowwI7.jpg) Opera: [Tampermonkey](https://addons.opera.com/extensions/details/tampermonkey-beta/)
+
+Now install the user script.
+
+![](https://imgur.com/lvfODGq.jpg)**Smartphones & Tablets**
+
+-   Create a new bookmark in your mobile browser
+-   Edit the bookmark and copy this to its address field:
+
+`javascript:document.body.appendChild(document.createElement('script')).src='https://the-west-scripts.github.io/tw-duel-warner/script.user.js'`
+
+-   Now open the game and click the bookmark to start the script

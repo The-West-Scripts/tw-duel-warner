@@ -4,7 +4,7 @@
   "author": "mr-perseus",
   "license": "MIT",
   "description": "Userscript for The West. Warns if somebody is in duel range.",
-  "main": "src/TW-Duel-Warner.js",
+  "main": "script.user.js",
   "scripts": {
     "test": "eslint src"
   },
