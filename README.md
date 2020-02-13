@@ -6,21 +6,25 @@
 
 Userscript for The West. Warns if somebody is in duel range.
 
-**Duel warner**  
+**Duel warner**
+
 Warns if someone moves to your position. A sound gets played and the following flag is shown:
-![](img/warn-flag.png)
+<img src="img/warn-flag.png" width="40%" />
 
 **New players attachable**
+
 Warns if a player got attackable (which means for a player with character class "Dueller" that he could be attacking you).
-![](img/players-attackable.jpg)
+<img src="img/players-attackable.jpg" width="40%" />
 
 **System Notification**
+
 For the two features above, fire a system notification.
 ![](img/system-notification.png)
 
 **Settings**
+
 Configure The West Duel Warner. Please refresh the page after changing anything.
-![](img/settings.png)
+<img src="img/settings.png" width="60%" />
 
 ## Comments
 
