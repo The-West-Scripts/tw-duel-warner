@@ -3,10 +3,7 @@
 // @author      Mr. Perseus
 // @namespace   tw-perseus
 // @description Warns if somebody is in duel range.
-// @include     https://*.the-west.*/game.php*
-// @include     http://*.the-west.*/game.php*
-// @include     https://*.tw.innogames.*/game.php*
-// @include     http://*.tw.innogames.*/game.php*
+// @include     https://de1.the-west.*/game.php*
 // @version     1.1.0
 // @grant       GM_notification
 // @grant       window.focus
@@ -43,7 +40,7 @@ if (typeof GM_notification === 'function') {
             repeatedSoundUntilClosed: false,
             disableNotifications: false,
             watchedPlayers: '',
-            allPlayersWatched: false,
+            allPlayersWatched: true,
         },
         version: '1.1.0',
         preferences: {},
